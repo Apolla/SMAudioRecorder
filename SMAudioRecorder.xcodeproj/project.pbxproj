@@ -16,6 +16,7 @@
 		474C9EA81CE9D495005936FA /* SMAudioRecorderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 474C9EA71CE9D495005936FA /* SMAudioRecorderTests.m */; };
 		474C9EB31CE9D495005936FA /* SMAudioRecorderUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 474C9EB21CE9D495005936FA /* SMAudioRecorderUITests.m */; };
 		474C9EC31CE9D4FC005936FA /* FTRecordTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 474C9EC21CE9D4FC005936FA /* FTRecordTool.m */; };
+		EC079E131CEAEBE00041597D /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC079E121CEAEBE00041597D /* libmp3lame.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		474C9EB41CE9D495005936FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		474C9EC11CE9D4FC005936FA /* FTRecordTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTRecordTool.h; sourceTree = "<group>"; };
 		474C9EC21CE9D4FC005936FA /* FTRecordTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTRecordTool.m; sourceTree = "<group>"; };
+		EC079E111CEAEA790041597D /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
+		EC079E121CEAEBE00041597D /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC079E131CEAEBE00041597D /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,10 +151,20 @@
 		474C9EC01CE9D4FC005936FA /* SMAudioRecorder */ = {
 			isa = PBXGroup;
 			children = (
+				EC079E101CEAEA790041597D /* lame */,
 				474C9EC11CE9D4FC005936FA /* FTRecordTool.h */,
 				474C9EC21CE9D4FC005936FA /* FTRecordTool.m */,
 			);
 			path = SMAudioRecorder;
+			sourceTree = "<group>";
+		};
+		EC079E101CEAEA790041597D /* lame */ = {
+			isa = PBXGroup;
+			children = (
+				EC079E121CEAEBE00041597D /* libmp3lame.a */,
+				EC079E111CEAEA790041597D /* lame.h */,
+			);
+			path = lame;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -429,9 +443,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SMAudioRecorder/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/SMAudioRecorder/SMAudioRecorder/lame",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.apolla.SMAudioRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -441,9 +460,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SMAudioRecorder/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/SMAudioRecorder/SMAudioRecorder/lame",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.apolla.SMAudioRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

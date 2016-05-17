@@ -39,6 +39,9 @@
 /** 销毁录音文件 */
 - (void)destructionRecordingFile;
 
+/** 录音MP3文件 */
+- (NSString *)transformCAFToMP3;
+
 @property (nonatomic , assign)CGFloat recordTime;
 
 /** 录音对象 */

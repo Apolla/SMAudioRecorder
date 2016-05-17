@@ -37,6 +37,9 @@
 
 /** 录音工具 */
 @property (nonatomic, strong) FTRecordTool *recordTool;
+
+@property (weak, nonatomic) IBOutlet UILabel *textLable;
+
 @end
 
 @implementation ViewController
@@ -110,10 +113,11 @@
             
             [self.recordTool stopRecording];
             //[self destructionRecordingFile];
+         
             
         });
         self.recordTool.recordTime = 0;
-
+        self.textLable.text =  [self.recordTool transformCAFToMP3];
         self.timmerLable.text = @"00 秒";
 
     }

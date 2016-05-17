@@ -5,12 +5,15 @@
 //  Created by 宋明 on 16/5/11.
 //  Copyright © 2016年 灵猫. All rights reserved.
 //
-#define SMRecordFielName @"SMRecord.caf"
+#define LVRecordFielName @"lvRecord.caf"
 
 #import "FTRecordTool.h"
-
+#import "lame.h"
 @interface FTRecordTool ()<AVAudioRecorderDelegate>
-
+{
+    
+    NSString *mp3FilePath;
+}
 /** 定时器 */
 @property (nonatomic, strong) NSTimer *timer;
 
@@ -51,13 +54,13 @@
     self.recordTime += 0.1 ;
     if ([self.delegate respondsToSelector:@selector(recordTool:didstartRecoring: AndPow:)]) {
         [self.delegate recordTool:self didstartRecoring: self.recordTime
-         AndPow:pow];
+                           AndPow:pow];
     }
 }
 
 -(NSString *)getRecorderPow
 {
-
+    
     [self.recorder updateMeters];
     double lowPassResults = pow(10, (0.05 * [self.recorder peakPowerForChannel:0]));
     float result  = 10 * (float)lowPassResults;
@@ -77,7 +80,7 @@
     } else if (result > 40) {
         pow = @"• • • • • • •";
     }
-
+    
     return pow;
 }
 
@@ -133,20 +136,20 @@ static id instance;
         
         // 1.获取沙盒地址
         NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-        NSString *filePath = [path stringByAppendingPathComponent:SMRecordFielName];
+        NSString *filePath = [path stringByAppendingPathComponent:LVRecordFielName];
         self.recordFileUrl = [NSURL fileURLWithPath:filePath];
         NSLog(@"%@", filePath);
         
         // 3.设置录音的一些参数
         NSMutableDictionary *setting = [NSMutableDictionary dictionary];
         // 音频格式
-        setting[AVFormatIDKey] = @(kAudioFormatAppleIMA4);
+        setting[AVFormatIDKey] = @(kAudioFormatLinearPCM);
         // 录音采样率(Hz) 如：AVSampleRateKey==8000/44100/96000（影响音频的质量）
-        setting[AVSampleRateKey] = @(44100);
+        setting[AVSampleRateKey] = @(11025.0);
         // 音频通道数 1 或 2
-        setting[AVNumberOfChannelsKey] = @(1);
+        setting[AVNumberOfChannelsKey] = @(2);
         // 线性音频的位深度  8、16、24、32
-        setting[AVLinearPCMBitDepthKey] = @(8);
+        setting[AVLinearPCMBitDepthKey] = @(16);
         //录音的质量
         setting[AVEncoderAudioQualityKey] = [NSNumber numberWithInt:AVAudioQualityHigh];
         
@@ -173,9 +176,54 @@ static id instance;
         [self.session setActive:NO error:nil];
     }
     
-
+    
 }
 
-
-
+- (NSString *)transformCAFToMP3 {
+    
+    NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *filePath = [path stringByAppendingPathComponent:LVRecordFielName];
+    mp3FilePath = [path stringByAppendingPathComponent:@"myselfRecord.mp3"];
+    @try {
+        int read, write;
+        
+        //以二进制方式打开一个文件（文件必须存在）rb 代表以二进制方式打开一个文件 只读
+        FILE *pcm = fopen([filePath UTF8String], "rb");   //source 被转换的音频文件位置
+        
+        fseek(pcm,4*1024,SEEK_CUR);                                                   //skip file header
+        FILE *mp3 = fopen([mp3FilePath UTF8String], "wb"); //output 输出生成的Mp3文件位置
+        
+        const int PCM_SIZE = 8192;
+        const int MP3_SIZE = 8192;
+        short int pcm_buffer[PCM_SIZE*2];
+        unsigned char mp3_buffer[MP3_SIZE];
+        
+        lame_t lame = lame_init();
+        lame_set_in_samplerate(lame, 11025.0);
+        lame_set_VBR(lame, vbr_default);
+        lame_init_params(lame);
+        
+        do {
+            read = fread(pcm_buffer, 2*sizeof(short int), PCM_SIZE, pcm);
+            if (read == 0)
+                write = lame_encode_flush(lame, mp3_buffer, MP3_SIZE);
+            else
+                write = lame_encode_buffer_interleaved(lame, pcm_buffer, read, mp3_buffer, MP3_SIZE);
+            
+            fwrite(mp3_buffer, write, 1, mp3);
+            
+        } while (read != 0);
+        
+        lame_close(lame);
+        fclose(mp3);
+        fclose(pcm);
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@",[exception description]);
+    }
+    @finally {
+        return mp3FilePath;
+        
+    }
+}
 @end
